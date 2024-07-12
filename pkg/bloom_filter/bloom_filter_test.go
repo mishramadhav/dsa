@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	bloomfilter "github.com/mishramadhav/dsa/pkg/bloom_filter"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestBloomFilter(t *testing.T) {
@@ -17,9 +16,15 @@ func TestBloomFilter(t *testing.T) {
 		bf.Add([]byte("hello"))
 		bf.Add([]byte("world"))
 
-		assert.True(t, bf.Contains([]byte("hello")), "expected 'hello' to be in the Bloom filter")
-		assert.True(t, bf.Contains([]byte("world")), "expected 'world' to be in the Bloom filter")
-		assert.False(t, bf.Contains([]byte("foo")), "expected 'foo' to not be in the Bloom filter")
+		if !bf.Contains([]byte("hello")) {
+			t.Error("expected 'hello' to be in the Bloom filter")
+		}
+		if !bf.Contains([]byte("world")) {
+			t.Error("expected 'world' to be in the Bloom filter")
+		}
+		if bf.Contains([]byte("foo")) {
+			t.Error("expected 'foo' to not be in the Bloom filter")
+		}
 	})
 
 	t.Run("NewBloomFilterWithAllowedFalsePositiveRate", func(t *testing.T) {
@@ -29,9 +34,15 @@ func TestBloomFilter(t *testing.T) {
 		bf.Add([]byte("hello"))
 		bf.Add([]byte("world"))
 
-		assert.True(t, bf.Contains([]byte("hello")), "expected 'hello' to be in the Bloom filter")
-		assert.True(t, bf.Contains([]byte("world")), "expected 'world' to be in the Bloom filter")
-		assert.False(t, bf.Contains([]byte("foo")), "expected 'foo' to not be in the Bloom filter")
+		if !bf.Contains([]byte("hello")) {
+			t.Error("expected 'hello' to be in the Bloom filter")
+		}
+		if !bf.Contains([]byte("world")) {
+			t.Error("expected 'world' to be in the Bloom filter")
+		}
+		if bf.Contains([]byte("foo")) {
+			t.Error("expected 'foo' to not be in the Bloom filter")
+		}
 	})
 
 	t.Run("Reset", func(t *testing.T) {
@@ -43,8 +54,12 @@ func TestBloomFilter(t *testing.T) {
 
 		bf.Reset()
 
-		assert.False(t, bf.Contains([]byte("hello")), "expected 'hello' to not be in the Bloom filter after reset")
-		assert.False(t, bf.Contains([]byte("world")), "expected 'world' to not be in the Bloom filter after reset")
+		if bf.Contains([]byte("hello")) {
+			t.Error("expected 'hello' to not be in the Bloom filter after reset")
+		}
+		if bf.Contains([]byte("world")) {
+			t.Error("expected 'world' to not be in the Bloom filter after reset")
+		}
 	})
 
 	t.Run("GetOptimalHasherCount", func(t *testing.T) {
@@ -61,7 +76,10 @@ func TestBloomFilter(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			assert.Equal(t, test.expected, bloomfilter.GetOptimalHasherCountWithExpectedItemsAndOptimalArraySize(test.n, test.m), "unexpected number of hash functions")
+			got := bloomfilter.GetOptimalHasherCountWithExpectedItemsAndOptimalArraySize(test.n, test.m)
+			if got != test.expected {
+				t.Errorf("unexpected number of hash functions: got=%d, expected=%d", got, test.expected)
+			}
 		}
 	})
 
@@ -79,7 +97,10 @@ func TestBloomFilter(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			assert.Equal(t, test.expected, bloomfilter.GetOptimalArraySizeWithExpectedItemsAndFalsePositiveProbability(test.n, test.p), "unexpected size of the bit array")
+			got := bloomfilter.GetOptimalArraySizeWithExpectedItemsAndFalsePositiveProbability(test.n, test.p)
+			if got != test.expected {
+				t.Errorf("unexpected size of the bit array: got=%d, expected=%d", got, test.expected)
+			}
 		}
 	})
 }
