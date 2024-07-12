@@ -24,8 +24,12 @@ func TestStack(t *testing.T) {
 	if s.Empty() {
 		t.Errorf("expected stack to not be empty")
 	}
-	if s.Top() != 1 {
-		t.Errorf("top element - expected: %d, got: %d", 1, s.Top())
+	v, err := s.Top()
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+	if v != 1 {
+		t.Errorf("top element - expected: %d, got: %d", 1, v)
 	}
 
 	s.Push(2)
@@ -36,18 +40,18 @@ func TestStack(t *testing.T) {
 	if s.Empty() {
 		t.Errorf("expected stack to not be empty")
 	}
-	if s.Top() != 2 {
-		t.Errorf("top element - expected: %d, got: %d", 2, s.Top())
+	if v, _ := s.Top(); v != 2 {
+		t.Errorf("top element - expected: %d, got: %d", 2, v)
 	}
 
-	if v := s.Pop(); v != 2 {
+	if v, _ := s.Pop(); v != 2 {
 		t.Errorf("popped element - expected: %d, got: %d", 2, v)
 	}
 	if s.Len() != 1 {
 		t.Errorf("stack length - expected: %d, got: %d", 1, s.Len())
 	}
 
-	if v := s.Pop(); v != 1 {
+	if v, _ := s.Pop(); v != 1 {
 		t.Errorf("popped element - expected: %d, got: %d", 1, v)
 	}
 	if s.Len() != 0 {
@@ -71,21 +75,30 @@ func TestStack(t *testing.T) {
 	if !s.Empty() {
 		t.Errorf("expected stack to be empty")
 	}
-	if s.Top() != 0 {
-		t.Errorf("top element - expected: %d, got: %d", 0, s.Top())
+	_, errTop := s.Top()
+	if errTop == nil {
+		t.Errorf("expected error, got nil")
 	}
-	if v := s.Pop(); v != 0 {
-		t.Errorf("popped element - expected: %d, got: %d", 0, v)
+	if errTop != stack.ErrEmptyStack {
+		t.Errorf("expected %v, got %v", stack.ErrEmptyStack, errTop)
+	}
+
+	_, errPop := s.Pop()
+	if errPop == nil {
+		t.Errorf("expected error, got nil")
+	}
+	if errPop != stack.ErrEmptyStack {
+		t.Errorf("expected %v, got %v", stack.ErrEmptyStack, errPop)
 	}
 	s.Push(5)
 	s.Push(6)
 	if s.Len() != 2 {
 		t.Errorf("stack length - expected: %d, got: %d", 2, s.Len())
 	}
-	if s.Top() != 6 {
-		t.Errorf("top element - expected: %d, got: %d", 6, s.Top())
+	if v, _ := s.Top(); v != 6 {
+		t.Errorf("top element - expected: %d, got: %d", 6, v)
 	}
-	if v := s.Pop(); v != 6 {
+	if v, _ := s.Pop(); v != 6 {
 		t.Errorf("popped element - expected: %d, got: %d", 6, v)
 	}
 }
