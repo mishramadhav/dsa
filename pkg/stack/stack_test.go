@@ -3,69 +3,95 @@ package stack_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/mishramadhav/dsa/pkg/stack"
 )
 
 func TestStack(t *testing.T) {
-	s := stack.New()
+	s := stack.New[int]()
 
-	assert := assert.New(t)
-
-	assert.Equal(0, s.Len(), "stack length should be 0")
-	assert.True(s.Empty(), "stack should be empty")
+	if s.Len() != 0 {
+		t.Errorf("stack length - expected: %d, got: %d", 0, s.Len())
+	}
+	if !s.Empty() {
+		t.Errorf("expected stack to be empty")
+	}
 
 	s.Push(1)
 
-	assert.Equal(1, s.Len(), "stack length should be 1")
-	assert.False(s.Empty(), "stack should not be empty")
-	assert.Equal(1, s.Top(), "top element should be 1")
+	if s.Len() != 1 {
+		t.Errorf("stack length - expected: %d, got: %d", 1, s.Len())
+	}
+	if s.Empty() {
+		t.Errorf("expected stack to not be empty")
+	}
+	if s.Top() != 1 {
+		t.Errorf("top element - expected: %d, got: %d", 1, s.Top())
+	}
 
 	s.Push(2)
 
-	assert.Equal(2, s.Len(), "stack length should be 2")
-	assert.False(s.Empty(), "stack should not be empty")
-	assert.Equal(2, s.Top(), "top element should be 2")
-	assert.Equal(2, s.Pop(), "popped element should be 2")
-	assert.Equal(1, s.Len(), "stack length should be 1")
-	assert.False(s.Empty(), "stack should not be empty")
-	assert.Equal(1, s.Top(), "top element should be 1")
-	assert.Equal(1, s.Pop(), "popped element should be 1")
-	assert.Equal(0, s.Len(), "stack length should be 0")
-	assert.True(s.Empty(), "stack should be empty")
-	assert.Nil(s.Top(), "top element should be nil")
-	assert.Nil(s.Pop(), "popped element should be nil")
+	if s.Len() != 2 {
+		t.Errorf("stack length - expected: %d, got: %d", 2, s.Len())
+	}
+	if s.Empty() {
+		t.Errorf("expected stack to not be empty")
+	}
+	if s.Top() != 2 {
+		t.Errorf("top element - expected: %d, got: %d", 2, s.Top())
+	}
 
-	stackWithCapacity := stack.NewWithCapacity(2)
+	if v := s.Pop(); v != 2 {
+		t.Errorf("popped element - expected: %d, got: %d", 2, v)
+	}
+	if s.Len() != 1 {
+		t.Errorf("stack length - expected: %d, got: %d", 1, s.Len())
+	}
 
-	assert.Equal(0, stackWithCapacity.Len(), "stack length should be 0")
-	assert.True(stackWithCapacity.Empty(), "stack should be empty")
+	if v := s.Pop(); v != 1 {
+		t.Errorf("popped element - expected: %d, got: %d", 1, v)
+	}
+	if s.Len() != 0 {
+		t.Errorf("stack length - expected: %d, got: %d", 0, s.Len())
+	}
 
-	stackWithCapacity.Push(1)
+	s.Push(3)
+	s.Push(4)
+	if s.Len() != 2 {
+		t.Errorf("stack length - expected: %d, got: %d", 2, s.Len())
+	}
+	s.Clear()
+	if s.Len() != 0 {
+		t.Errorf("stack length - expected: %d, got: %d", 0, s.Len())
+	}
 
-	assert.Equal(1, stackWithCapacity.Len(), "stack length should be 1")
-	assert.False(stackWithCapacity.Empty(), "stack should not be empty")
-	assert.Equal(1, stackWithCapacity.Top(), "top element should be 1")
-
-	stackWithCapacity.Push(2)
-
-	assert.Equal(2, stackWithCapacity.Len(), "stack length should be 2")
-	assert.False(stackWithCapacity.Empty(), "stack should not be empty")
-	assert.Equal(2, stackWithCapacity.Top(), "top element should be 2")
-	assert.Equal(2, stackWithCapacity.Pop(), "popped element should be 2")
-	assert.Equal(1, stackWithCapacity.Len(), "stack length should be 1")
-	assert.False(stackWithCapacity.Empty(), "stack should not be empty")
-	assert.Equal(1, stackWithCapacity.Top(), "top element should be 1")
-	assert.Equal(1, stackWithCapacity.Pop(), "popped element should be 1")
-	assert.Equal(0, stackWithCapacity.Len(), "stack length should be 0")
-	assert.True(stackWithCapacity.Empty(), "stack should be empty")
-	assert.Nil(stackWithCapacity.Top(), "top element should be nil")
-	assert.Nil(stackWithCapacity.Pop(), "popped element should be nil")
+	s = stack.NewWithCapacity[int](2)
+	if s.Len() != 0 {
+		t.Errorf("stack length - expected: %d, got: %d", 0, s.Len())
+	}
+	if !s.Empty() {
+		t.Errorf("expected stack to be empty")
+	}
+	if s.Top() != 0 {
+		t.Errorf("top element - expected: %d, got: %d", 0, s.Top())
+	}
+	if v := s.Pop(); v != 0 {
+		t.Errorf("popped element - expected: %d, got: %d", 0, v)
+	}
+	s.Push(5)
+	s.Push(6)
+	if s.Len() != 2 {
+		t.Errorf("stack length - expected: %d, got: %d", 2, s.Len())
+	}
+	if s.Top() != 6 {
+		t.Errorf("top element - expected: %d, got: %d", 6, s.Top())
+	}
+	if v := s.Pop(); v != 6 {
+		t.Errorf("popped element - expected: %d, got: %d", 6, v)
+	}
 }
 
 func BenchmarkStackPush(b *testing.B) {
-	s := stack.New()
+	s := stack.New[int]()
 
 	b.ResetTimer()
 
@@ -75,7 +101,7 @@ func BenchmarkStackPush(b *testing.B) {
 }
 
 func BenchmarkStackPushWithCapacity(b *testing.B) {
-	s := stack.NewWithCapacity(b.N)
+	s := stack.NewWithCapacity[int](b.N)
 
 	b.ResetTimer()
 
