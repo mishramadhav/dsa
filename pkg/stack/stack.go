@@ -1,30 +1,32 @@
 package stack
 
-import "fmt"
+import (
+	"errors"
+)
 
-var ErrEmptyStack = fmt.Errorf("stack is empty")
+var ErrEmptyStack = errors.New("stack is empty")
 
 type Stack[T any] struct {
-	data []T
+	Elements []T
 }
 
 // New creates a new stack.
 func New[T any]() *Stack[T] {
 	return &Stack[T]{
-		data: make([]T, 0),
+		Elements: make([]T, 0),
 	}
 }
 
 // NewWithCapacity creates a new stack with the specified capacity.
 func NewWithCapacity[T any](capacity int) *Stack[T] {
 	return &Stack[T]{
-		data: make([]T, 0, capacity),
+		Elements: make([]T, 0, capacity),
 	}
 }
 
 // Len returns the number of elements in the stack.
 func (s *Stack[T]) Len() int {
-	return len(s.data)
+	return len(s.Elements)
 }
 
 // Empty returns true if the stack is empty.
@@ -40,12 +42,12 @@ func (s *Stack[T]) Top() (T, error) {
 		return zeroValue, ErrEmptyStack
 	}
 
-	return s.data[s.Len()-1], nil
+	return s.Elements[s.Len()-1], nil
 }
 
 // Push pushes a value onto the stack.
 func (s *Stack[T]) Push(v T) {
-	s.data = append(s.data, v)
+	s.Elements = append(s.Elements, v)
 }
 
 // Pop pops a value from the stack.
@@ -56,13 +58,13 @@ func (s *Stack[T]) Pop() (T, error) {
 		return zeroValue, ErrEmptyStack
 	}
 
-	v := s.data[s.Len()-1]
-	s.data = s.data[:s.Len()-1]
+	v := s.Elements[s.Len()-1]
+	s.Elements = s.Elements[:s.Len()-1]
 
 	return v, nil
 }
 
 // Clear removes all elements from the stack.
 func (s *Stack[T]) Clear() {
-	s.data = s.data[:0]
+	s.Elements = s.Elements[:0]
 }
